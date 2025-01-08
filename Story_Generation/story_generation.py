@@ -14,7 +14,7 @@ from PIL import Image
 
 TEXT_API_URL = "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Coder-32B-Instruct"
 IMAGE_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-3-medium-diffusers"
-headers = {"Authorization": f"Bearer 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"}
+headers = {"Authorization": f"Bearer hf_(token)"}
 
 def generate_text(prompt, max_pages=10, tokens_per_page=100):
     story = prompt.strip()
