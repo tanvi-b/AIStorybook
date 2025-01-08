@@ -1,4 +1,4 @@
-let RunSentimentAnalysis = ()=>{
+/*let RunSentimentAnalysis = ()=>{
     textToAnalyze = document.getElementById("textToAnalyze").value;
 
     let xhttp = new XMLHttpRequest();
@@ -9,4 +9,4 @@ let RunSentimentAnalysis = ()=>{
     };
     xhttp.open("GET", "emotionDetector?textToAnalyze"+"="+textToAnalyze, true);
     xhttp.send();
-}
+}*/

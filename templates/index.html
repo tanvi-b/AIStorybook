@@ -1,32 +1,22 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script src="./static/mywebscript.js"></script>
-    <style>
-        .center-heading {
-            text-align: center;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Storybook</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <div class="card">
-        <div class="card-body">
-            <h1 class="center-heading">NLP - Emotion Detection</h1> 
-            <div style="padding: 25px 25px 25px 25px;">
-            <h2 class="mb-3">
-                <label class="form-label">Please enter the text to be analyzed</label>
-                <input type="textarea" class="form-control" id="textToAnalyze">
-            </h2>
+<h1>AI Storybook Generator</h1>
+<form id="story-form">
+    <label for="story-idea">Enter the story prompt:</label><br>
+    <textarea id="story-idea" name="story_idea" rows="4" cols="50"></textarea><br><br>
+    <button type="button" onclick="generateStory()">Generate Story</button>
+</form>
+<h2>Generated Story:</h2>
+<div id="story-output"></div>
+<h2>Generated Images:</h2>
+<div id="images-output"></div>
 
-            <div style="padding: 25px 25px 25px 25px;">
-                <button onclick="RunSentimentAnalysis()" class="btn btn-secondary">Run Sentiment Analysis</button>
-            </div>
-            <div style="padding: 25px 25px 25px 25px;"></div>
-            <h2 class="mb-3">
-                <label class="form-label">Result of Emotion Detection</label>
-            </h2>
-
-            <div id="system_response" style="padding: 25px 25px 25px 25px;"></div>
-        </div>
-    </div>
 </body>
+</html>
