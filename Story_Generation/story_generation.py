@@ -87,5 +87,3 @@ def generate_text(prompt, max_pages=10, tokens_per_page=100):
 #     for idx, page in enumerate(pages):
 #         print(f"Page {idx + 1}: {page['text']}")
 #         print(f"Image saved at: {page['image']}")
-
-#GyAJmHuzgDnGWtvQPqntfDKCQVujRNNxPK
