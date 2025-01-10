@@ -88,6 +88,14 @@
             overflow: hidden;
         }
 
+        .page-pair {
+            display: flex;
+            flex: 1;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+
         .page {
             flex: 1;
             height: 100%;
@@ -101,14 +109,8 @@
             text-align: center;
         }
 
-        .page.hidden {
+        .hidden {
             display: none;
-        }
-
-        .page img {
-            max-width: 80%;
-            height: auto;
-            margin-top: 10px;
         }
 
         .nav-button {
@@ -165,20 +167,33 @@
         const storyPages = await response.json();
 
         const book = document.getElementById("book");
-        book.innerHTML = ""; // Clear existing content
+        book.innerHTML = "";
 
-        pages = storyPages.map((page, index) => {
-            const pageDiv = document.createElement("div");
-            pageDiv.className = `page ${index === 0 ? "" : "hidden"}`;
-            pageDiv.innerHTML = `
-                <p>${page.text}</p>
-            `;
-            book.appendChild(pageDiv);
-            return pageDiv;
-        });
+        const pagePairs = [];
+        for (let i = 0; i < storyPages.length; i += 2) {
+            const pair = document.createElement("div");
+            pair.className = `page-pair ${i === 0 ? "" : "hidden"}`;
 
+            const page1 = createPage(storyPages[i]?.text || "");
+            const page2 = createPage(storyPages[i + 1]?.text || "");
+
+            pair.appendChild(page1);
+            pair.appendChild(page2);
+
+            pagePairs.push(pair);
+            book.appendChild(pair);
+        }
+
+        pages = pagePairs;
         currentPage = 0;
         updateNavigationButtons();
+    }
+
+    function createPage(text) {
+        const pageDiv = document.createElement("div");
+        pageDiv.className = "page";
+        pageDiv.innerHTML = `<p>${text}</p>`;
+        return pageDiv;
     }
 
     function updateNavigationButtons() {

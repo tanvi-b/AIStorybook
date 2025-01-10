@@ -16,9 +16,18 @@ def generate_story():
     if not story_prompt:
         return jsonify({"error": "No story prompt provided"}), 400
 
-    story_pages = generate_text(story_prompt)
+    story_pages = generate_text(story_prompt + "Write a short story.")
     formatted_pages = [{"text": page["text"]} for page in story_pages]
     return jsonify(formatted_pages)
 
 if __name__ == "__main__":
     run_storybook()
+
+#The story must end within 10 pages. The story must have a beginning, middle, and end. No title or chapters. Each page must complete the sentence. Do not continue the sentence across 2 pages.
+#set min and max page count
+#weird response to prompt: Girl's trip to NYC
+#good response to prompt: Girl's trip to India
+#shorten words per page?
+#add loading sign
+#once generate story i clicked any current story will be erased from pages
+#errors: want to print just story but sometimes printing stuff that model adds

@@ -1,8 +1,6 @@
 #got API authentication code from https://huggingface.co/docs/api-inference/getting-started
 #got code structure for images from here: https://huggingface.co/docs/api-inference/tasks/text-to-image
 
-#Errors: want to print just story but sometimes printing stuff that model adds, images are little weird
-
 import os
 import time
 import requests
@@ -13,7 +11,7 @@ TEXT_API_URL = "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Coder-3
 IMAGE_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-3-medium-diffusers"
 headers = {"Authorization": f"Bearer hf_(token)"}
 
-def generate_text(prompt, max_pages=10, tokens_per_page=100):
+def generate_text(prompt, max_pages=13, tokens_per_page=100):
     story = prompt.strip()
     story_pages = []
 
@@ -42,7 +40,7 @@ def generate_text(prompt, max_pages=10, tokens_per_page=100):
             response = requests.post(TEXT_API_URL, headers=headers, json=payload)
             result = response.json()
             if "error" in result and "loading" in result["error"]:
-                #print("Model is loading")
+                print("Model is loading")
                 time.sleep(20)
                 continue
             elif "error" in result:
@@ -57,25 +55,25 @@ def generate_text(prompt, max_pages=10, tokens_per_page=100):
         #print(f"Page {page_num + 1}:\n{page_text}\n")
         story += " " + page_text
 
-        image_response = requests.post(IMAGE_API_URL, headers=headers, json={"inputs": page_text})
-
-        if image_response.status_code == 200:
-            try:
-                image_bytes = image_response.content
-                image = Image.open(io.BytesIO(image_bytes))
-                image_path = os.path.join(images_directory, f"page_{page_num + 1}.png")
-                image.save(image_path)
-                #print(f"Image saved at: {image_path}")
-            except Exception as e:
-                print(f"Couldn't process image for page {page_num + 1}: {e}")
-        else:
-            #print(f"Couldn't create image for page {page_num + 1}. HTTP code: {image_response.status_code}")
-            with open(f"error_page_{page_num + 1}.json", "w") as error_file:
-                error_file.write(image_response.text)
+        # image_response = requests.post(IMAGE_API_URL, headers=headers, json={"inputs": page_text})
+        #
+        # if image_response.status_code == 200:
+        #     try:
+        #         image_bytes = image_response.content
+        #         image = Image.open(io.BytesIO(image_bytes))
+        #         image_path = os.path.join(images_directory, f"page_{page_num + 1}.png")
+        #         image.save(image_path)
+        #         print(f"Image saved at: {image_path}")
+        #     except Exception as e:
+        #         print(f"Couldn't process image for page {page_num + 1}: {e}")
+        # else:
+        #     print(f"Couldn't create image for page {page_num + 1}. HTTP code: {image_response.status_code}")
+        #     with open(f"error_page_{page_num + 1}.json", "w") as error_file:
+        #         error_file.write(image_response.text)
 
         story_pages.append({
             "text": page_text,
-            "image": image_path if 'image_path' in locals() else "Error generating image"
+            #"image": image_path if 'image_path' in locals() else "Error generating image"
         })
 
     return story_pages
@@ -87,3 +85,5 @@ def generate_text(prompt, max_pages=10, tokens_per_page=100):
 #     for idx, page in enumerate(pages):
 #         print(f"Page {idx + 1}: {page['text']}")
 #         print(f"Image saved at: {page['image']}")
+
+#
