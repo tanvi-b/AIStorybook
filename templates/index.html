@@ -141,6 +141,26 @@
         .next {
             right: -60px;
         }
+
+        .spinner {
+            display: none;
+            margin: 20px auto;
+            border: 8px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 8px solid #5a3e2b;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 <body>
@@ -150,6 +170,8 @@
     <textarea id="story-idea" name="story_idea" rows="4" cols="50"></textarea><br><br>
     <button type="button" onclick="generateStory()">Generate Story</button>
 </form>
+
+<div class="spinner" id="spinner"></div>
 
 <div class="storybook">
     <button class="nav-button prev" id="prevPage" onclick="prevPage()">&#8249;</button>
@@ -163,30 +185,41 @@
 
     async function generateStory() {
         const storyIdea = document.getElementById("story-idea").value;
-        const response = await fetch(`/generate?story_idea=${encodeURIComponent(storyIdea)}`);
-        const storyPages = await response.json();
-
+        const spinner = document.getElementById("spinner");
         const book = document.getElementById("book");
+
+        spinner.style.display = "block";
         book.innerHTML = "";
-
-        const pagePairs = [];
-        for (let i = 0; i < storyPages.length; i += 2) {
-            const pair = document.createElement("div");
-            pair.className = `page-pair ${i === 0 ? "" : "hidden"}`;
-
-            const page1 = createPage(storyPages[i]?.text || "");
-            const page2 = createPage(storyPages[i + 1]?.text || "");
-
-            pair.appendChild(page1);
-            pair.appendChild(page2);
-
-            pagePairs.push(pair);
-            book.appendChild(pair);
-        }
-
-        pages = pagePairs;
+        pages = [];
         currentPage = 0;
         updateNavigationButtons();
+
+        try {
+            const response = await fetch(`/generate?story_idea=${encodeURIComponent(storyIdea)}`);
+            const storyPages = await response.json();
+
+            const pagePairs = [];
+            for (let i = 0; i < storyPages.length; i += 2) {
+                const pair = document.createElement("div");
+                pair.className = `page-pair ${i === 0 ? "" : "hidden"}`;
+
+                const page1 = createPage(storyPages[i]?.text || "");
+                const page2 = createPage(storyPages[i + 1]?.text || "");
+
+                pair.appendChild(page1);
+                pair.appendChild(page2);
+
+                pagePairs.push(pair);
+                book.appendChild(pair);
+            }
+
+            pages = pagePairs;
+        } catch (error) {
+            alert("Error generating story. Please try again.");
+        } finally {
+            spinner.style.display = "none";
+            updateNavigationButtons();
+        }
     }
 
     function createPage(text) {
