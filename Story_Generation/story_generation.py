@@ -1,3 +1,6 @@
+#got API authentication code from https://huggingface.co/docs/api-inference/getting-started
+#got code structure for images from here: https://huggingface.co/docs/api-inference/tasks/text-to-image
+
 import os
 import time
 import requests
