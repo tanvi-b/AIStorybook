@@ -6,6 +6,7 @@ import time
 app = Flask("AI Storybook")
 
 #errors: story is still starting a little weirdly - sometimes words repeat
+#try making page count dynmaic - when you see "The End" pages end
 
 @app.route("/")
 def render_index_page():
