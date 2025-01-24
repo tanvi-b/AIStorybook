@@ -11,7 +11,7 @@ TEXT_API_URL = "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Coder-3
 IMAGE_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-3-medium-diffusers"
 headers = {"Authorization": f"Bearer hf_"}
 
-def generate_text(prompt, max_pages=1, tokens_per_page=100):
+def generate_text(prompt, max_pages=20, tokens_per_page=100):
     story = prompt.strip()
     story_pages = []
 
@@ -78,6 +78,7 @@ def generate_text(prompt, max_pages=1, tokens_per_page=100):
 
 #ERRORS with open ai: 5 images/min limit, image quality weird
 #Solution: use 3 different api keys and recycle
+#Content restrictions?
 
 # import os
 # import time

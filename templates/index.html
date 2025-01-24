@@ -71,6 +71,32 @@
             background-color: #704c36;
         }
 
+        .genre-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .genre-button {
+            background-color: #8e5e4a;
+            color: white;
+            padding: 10px 15px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .genre-button:hover {
+            background-color: #704c36;
+        }
+
+        .genre-button.selected {
+            background-color: #5a3e2b;
+            opacity: 0.7;
+        }
+
         .storybook {
             width: 80%;
             max-width: 900px;
@@ -184,6 +210,15 @@
 <form id="story-form">
     <label for="story-idea">Enter the story prompt:</label><br>
     <textarea id="story-idea" name="story_idea" rows="4" cols="50"></textarea><br>
+
+    <div class="genre-buttons">
+        <button type="button" class="genre-button" id="comedy-btn" onclick="selectGenre('comedy')">Comedy</button>
+        <button type="button" class="genre-button" id="fantasy-btn" onclick="selectGenre('fantasy')">Fantasy</button>
+        <button type="button" class="genre-button" id="adventure-btn" onclick="selectGenre('adventure')">Adventure</button>
+        <button type="button" class="genre-button" id="mystery-btn" onclick="selectGenre('mystery')">Mystery</button>
+        <button type="button" class="genre-button" id="scifi-btn" onclick="selectGenre('scifi')">Science Fiction</button>
+    </div>
+
     <button type="button" onclick="generateStory()">Generate Story</button>
 </form>
 
@@ -198,6 +233,18 @@
 <script>
     let currentPage = 0;
     let pages = [];
+    let selectedGenre = null;
+
+    function selectGenre(genre) {
+        if (selectedGenre) {
+            const previousButton = document.getElementById(`${selectedGenre}-btn`);
+            previousButton.classList.remove('selected');
+        }
+
+        const button = document.getElementById(`${genre}-btn`);
+        button.classList.add('selected');
+        selectedGenre = genre;
+    }
 
     async function generateStory() {
         const storyIdea = document.getElementById("story-idea").value;
@@ -211,7 +258,7 @@
         updateNavigationButtons();
 
         try {
-            const response = await fetch(`/generate?story_idea=${encodeURIComponent(storyIdea)}`);
+            const response = await fetch(`/generate?story_idea=${encodeURIComponent(storyIdea)}&genre=${selectedGenre}`);
             const storyPages = await response.json();
 
             const pagePairs = [];
