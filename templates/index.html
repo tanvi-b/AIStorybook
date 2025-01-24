@@ -251,6 +251,11 @@
         const spinner = document.getElementById("spinner");
         const book = document.getElementById("book");
 
+        if (!selectedGenre) {
+            alert("Please select a genre before generating the story.");
+            return;
+        }
+
         spinner.style.display = "block";
         book.innerHTML = "";
         pages = [];
@@ -258,7 +263,7 @@
         updateNavigationButtons();
 
         try {
-            const response = await fetch(`/generate?story_idea=${encodeURIComponent(storyIdea)}&genre=${selectedGenre}`);
+            const response = await fetch(`/generate?story_idea=${encodeURIComponent(storyIdea)}&genre=${encodeURIComponent(selectedGenre)}`);
             const storyPages = await response.json();
 
             const pagePairs = [];

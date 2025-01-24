@@ -6,12 +6,13 @@ import time
 import requests
 import io
 from PIL import Image
+from fpdf import FPDF
 
 TEXT_API_URL = "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Coder-32B-Instruct"
 IMAGE_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-3-medium-diffusers"
 headers = {"Authorization": f"Bearer hf_"}
 
-def generate_text(prompt, max_pages=20, tokens_per_page=100):
+def generate_text(prompt, max_pages=5, tokens_per_page=100):
     story = prompt.strip()
     story_pages = []
 
@@ -40,16 +41,17 @@ def generate_text(prompt, max_pages=20, tokens_per_page=100):
             response = requests.post(TEXT_API_URL, headers=headers, json=payload)
             result = response.json()
             if "error" in result and "loading" in result["error"]:
-                print("Model is loading")
+                print("Model is loading...")
                 time.sleep(20)
                 continue
             elif "error" in result:
                 print(f"Error: {result['error']}")
+                break
             break
 
         page_text = result[0].get("generated_text", "").strip()
-        if page_text == "" or page_text is None:
-            print("Story finished")
+        if not page_text:
+            print("Story finished.")
             break
 
         story += " " + page_text
@@ -71,10 +73,23 @@ def generate_text(prompt, max_pages=20, tokens_per_page=100):
 
         story_pages.append({
             "text": page_text,
-            "image": image_path if image_path else "Error generating image"
+            "image": image_path if image_path else None
         })
-
     return story_pages
+
+def generate_pdf(story_pages, output_pdf_path="storybook.pdf"):
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.set_font("Arial", size=12)
+
+    for page in story_pages:
+        pdf.add_page()
+        pdf.multi_cell(0, 10, page["text"])
+        if page["image"]:
+            pdf.ln(10)
+            pdf.image(page["image"], x=10, y=None, w=100)
+
+    pdf.output(output_pdf_path)
 
 #ERRORS with open ai: 5 images/min limit, image quality weird
 #Solution: use 3 different api keys and recycle

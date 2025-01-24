@@ -3,11 +3,11 @@ from Story_Generation.story_generation import generate_text
 import os
 import time
 
-app = Flask("AI Storybook")
-
 #errors: story is still starting a little weirdly - sometimes words repeat
 #try making page count dynamic - when you see "The End" pages end
-#next steps: tone words (comedy/fantasy/adventure), pdf download option, text to speech?
+#possible next steps: pdf download option, text to speech, different languages
+
+app = Flask("AI Storybook")
 
 @app.route("/")
 def render_index_page():
@@ -16,11 +16,15 @@ def render_index_page():
 @app.route("/generate", methods=["GET"])
 def generate_story():
     story_prompt = request.args.get('story_idea')
+    story_genre = request.args.get('genre')
+
     if not story_prompt:
         return jsonify({"error": "No story prompt given"}), 400
+    if not story_genre:
+        return jsonify({"error": "No story genre given"}), 400
 
     story_pages = generate_text(
-        story_prompt + " Write a short story. It should have a beginning, middle, and end. Conclude the story within "
+        story_prompt + " Write a short " + story_genre + " story. It should have a beginning, middle, and end. Conclude the story within "
                        "1000 words. It should be minimum 750 words and maximum 1000 words. Start printing story "
                        "immediately, don't include your own stuff like a title and other info. Begin story with "
                        "interesting hook. End the story with The End. Don't start the story with a period. "
@@ -31,7 +35,6 @@ def generate_story():
         {"text": page["text"], "image": f"/images/{os.path.basename(page['image'])}?timestamp={int(time.time())}"}
         for page in story_pages
     ]
-
     return jsonify(formatted_pages)
 
 @app.route("/images/<path:filename>")
