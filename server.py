@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, jsonify, send_from_directory
-from Story_Generation.story_generation import generate_text
+from Story_Generation.story_generation import generate_text, generate_pdf
 import os
 import time
 
-#errors: story is still starting a little weirdly - sometimes words repeat
 #try making page count dynamic - when you see "The End" pages end
-#possible next steps: pdf download option, text to speech, different languages
+#next steps: pdf download option, IOS app
+#change font of pdf, connect backend w/ pdf button
 
 app = Flask("AI Storybook")
 
@@ -27,8 +27,8 @@ def generate_story():
         story_prompt + " Write a short " + story_genre + " story. It should have a beginning, middle, and end. Conclude the story within "
                        "1000 words. It should be minimum 750 words and maximum 1000 words. Start printing story "
                        "immediately, don't include your own stuff like a title and other info. Begin story with "
-                       "interesting hook. End the story with The End. Don't start the story with a period. "
-                       "Start the story immediately with the word once."
+                       "interesting hook. End the story with The End. Keep it a short concise story. The story should not be too long. "
+                       "Don't start the story with a period. Start the story immediately with the word once."
     )
 
     formatted_pages = [
@@ -40,6 +40,13 @@ def generate_story():
 @app.route("/images/<path:filename>")
 def give_image(filename):
     return send_from_directory("images", filename)
+
+@app.route("/download-pdf", methods=["POST"])
+def download_pdf():
+    story_pages = request.get_json()
+    output_pdf_path = "storybook.pdf"
+    generate_pdf(story_pages, output_pdf_path)
+    return send_from_directory(directory=os.getcwd(), path=output_pdf_path, as_attachment=True)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
