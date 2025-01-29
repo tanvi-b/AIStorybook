@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask_cors import CORS
 from Story_Generation.story_generation import generate_text, generate_pdf
 import os
 import time
@@ -8,6 +9,7 @@ import time
 #change font of pdf, connect backend w/ pdf button
 
 app = Flask("AI Storybook")
+CORS(app)
 
 @app.route("/")
 def render_index_page():
@@ -29,6 +31,7 @@ def generate_story():
                        "immediately, don't include your own stuff like a title and other info. Begin story with "
                        "interesting hook. End the story with The End. Keep it a short concise story. The story should not be too long. "
                        "Don't start the story with a period. Start the story immediately with the word once."
+
     )
 
     formatted_pages = [
@@ -43,10 +46,42 @@ def give_image(filename):
 
 @app.route("/download-pdf", methods=["POST"])
 def download_pdf():
-    story_pages = request.get_json()
-    output_pdf_path = "storybook.pdf"
-    generate_pdf(story_pages, output_pdf_path)
-    return send_from_directory(directory=os.getcwd(), path=output_pdf_path, as_attachment=True)
+    try:
+        data = request.get_json()
+        if not data or 'pages' not in data:
+            return jsonify({"error": "No story pages provided"}), 400
+
+        story_pages = []
+        for page in data['pages']:
+            image_path = None
+            if page.get('image'):
+                image_url = page['image']
+                filename = image_url.split('/')[-1].split('?')[0]
+                image_path = os.path.join('images', filename)
+                if os.path.exists(image_path):
+                    print(f"Found image: {image_path}")
+                else:
+                    print(f"Image not found: {image_path}")
+
+            story_pages.append({
+                "text": page.get('text', ''),
+                "image": image_path
+            })
+
+        output_pdf_path = "storybook.pdf"
+        generate_pdf(story_pages, output_pdf_path)
+
+        return send_from_directory(
+            directory=os.getcwd(),
+            path=output_pdf_path,
+            as_attachment=True,
+            download_name="storybook.pdf",
+            mimetype="application/pdf"
+        )
+
+    except Exception as e:
+        print("Error generating PDF:", str(e))
+        return jsonify({"error": "Failed to generate PDF"}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

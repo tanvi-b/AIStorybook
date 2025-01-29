@@ -345,13 +345,28 @@
         }
     }
 
-    async function downloadPDF() {
+async function downloadPDF() {
+    const storyPages = [];
+    for (const pagePair of pages) {
+        const pageElements = pagePair.querySelectorAll('.page');
+        pageElements.forEach(pageElement => {
+            const textElement = pageElement.querySelector('p');
+            const imageElement = pageElement.querySelector('img');
+
+            storyPages.push({
+                text: textElement ? textElement.textContent : "",
+                image: imageElement ? imageElement.src : null
+            });
+        });
+    }
+
+    try {
         const response = await fetch("/download-pdf", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(pages),
+            body: JSON.stringify({ pages: storyPages })
         });
 
         if (response.ok) {
@@ -362,12 +377,16 @@
             a.download = "storybook.pdf";
             document.body.appendChild(a);
             a.click();
-            a.remove();
+            document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
         } else {
-            alert("Failed to download the PDF. Please try again.");
+            throw new Error('Failed to download PDF');
         }
+    } catch (error) {
+        console.error('Error downloading PDF:', error);
+        alert("Failed to download the PDF. Please try again.");
     }
+}
 </script>
 </body>
 </html>

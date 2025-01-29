@@ -80,12 +80,24 @@ def generate_text(prompt, max_pages=1, tokens_per_page=100):
 def generate_pdf(story_pages, output_pdf_path="storybook.pdf"):
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=15)
-    pdf.set_font("Arial", size=12)
+    pdf.set_font('Arial', size=12)
 
     for page in story_pages:
         pdf.add_page()
-        pdf.multi_cell(0, 10, page["text"])
-        if page["image"]:
-            pdf.ln(10)
-            pdf.image(page["image"], x=10, y=None, w=100)
-    pdf.output(output_pdf_path)
+
+        if page.get("text"):
+            pdf.multi_cell(0, 10, page["text"])
+
+        if page.get("image") and os.path.exists(page["image"]):
+            try:
+                pdf.ln(10)
+                pdf.image(page["image"], x=10, y=None, w=100)
+            except Exception as e:
+                print(f"Could not add image: {e}")
+
+    try:
+        pdf.output(output_pdf_path)
+        print(f"PDF generated at {output_pdf_path}")
+    except Exception as e:
+        print(f"Error saving PDF: {e}")
+        raise
