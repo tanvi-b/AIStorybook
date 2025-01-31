@@ -5,8 +5,7 @@ import os
 import time
 
 #try making page count dynamic - when you see "The End" pages end
-#next steps: pdf download option, IOS app
-#change font of pdf, connect backend w/ pdf button
+#change font of pdf
 
 app = Flask("AI Storybook")
 CORS(app)
