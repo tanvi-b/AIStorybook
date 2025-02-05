@@ -12,7 +12,7 @@ TEXT_API_URL = "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Coder-3
 IMAGE_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-3-medium-diffusers"
 headers = {"Authorization": f"Bearer hf_"}
 
-def generate_text(prompt, max_pages=3, tokens_per_page=100):
+def generate_text(prompt, max_pages=1, tokens_per_page=100):
     story = prompt.strip()
     story_pages = []
 
@@ -80,7 +80,7 @@ def generate_text(prompt, max_pages=3, tokens_per_page=100):
 def generate_pdf(story_pages, output_pdf_path="storybook.pdf"):
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=15)
-    pdf.set_font('Arial', size=12)
+    pdf.set_font('Courier', size=12)
 
     for page in story_pages:
         pdf.add_page()
